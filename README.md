@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Production preview (uses the `/arincicek/` base path):
+Production preview (served from `/`):
 
 ```bash
 npm run build

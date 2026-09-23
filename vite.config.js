@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 
-// Project Pages live at https://<user>.github.io/arincicek/
+// Local/dev/preview serve at /. GitHub project Pages needs the repo path.
 export default defineConfig({
-  base: "/arincicek/",
+  base: process.env.GITHUB_ACTIONS ? "/arincicek/" : "/",
 });

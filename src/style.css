@@ -1,0 +1,201 @@
+:root {
+  --ink: #e7eee6;
+  --muted: #9aada0;
+  --water: #10201c;
+  --deep: #0a1412;
+  --foam: #d7e4d4;
+  --reed: #c4a574;
+  --line: rgba(215, 228, 212, 0.14);
+  --font-serif: "Cormorant Garamond", "Times New Roman", serif;
+  --font-sans: "Manrope", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 700px at 80% -10%, rgba(126, 163, 138, 0.18), transparent 55%),
+    radial-gradient(900px 500px at 0% 100%, rgba(196, 165, 116, 0.1), transparent 50%),
+    linear-gradient(180deg, var(--water), var(--deep));
+  background-attachment: fixed;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.shell {
+  width: min(880px, calc(100% - 40px));
+  margin: 0 auto;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.site-header,
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 0;
+}
+
+.brand {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  letter-spacing: 0.02em;
+  color: var(--foam);
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: 22px;
+}
+
+.nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+.nav a[aria-current="page"],
+.nav a:hover,
+.brand:hover {
+  color: var(--foam);
+}
+
+.page {
+  padding: 48px 0 72px;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: var(--reed);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 0.74rem;
+}
+
+h1 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: clamp(3.2rem, 8vw, 6.4rem);
+  line-height: 0.92;
+  margin: 0 0 24px;
+}
+
+.lede,
+.prose p {
+  max-width: 36rem;
+  color: var(--muted);
+  font-size: 1.08rem;
+  line-height: 1.7;
+}
+
+.lede em {
+  color: var(--foam);
+  font-style: italic;
+  font-family: var(--font-serif);
+  font-size: 1.2em;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 36px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: var(--foam);
+  color: var(--deep);
+  text-decoration: none;
+  font: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.button.ghost {
+  background: transparent;
+  color: var(--foam);
+  border-color: var(--line);
+}
+
+.button:hover {
+  filter: brightness(1.06);
+}
+
+.prose h1 {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+}
+
+.note-form {
+  display: grid;
+  gap: 16px;
+  margin-top: 28px;
+  max-width: 26rem;
+}
+
+.note-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.note-form input,
+.note-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(10, 20, 18, 0.45);
+  color: var(--ink);
+  font: inherit;
+}
+
+.note-form input:focus,
+.note-form textarea:focus {
+  outline: 1px solid var(--reed);
+}
+
+.form-status {
+  margin: 0;
+  color: var(--reed);
+}
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+@media (max-width: 640px) {
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .page {
+    padding-top: 24px;
+  }
+}

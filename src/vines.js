@@ -11,31 +11,57 @@ const ROOTS = [
 ];
 
 export function mountVineFrame(container) {
-  const width = Math.round(window.innerWidth);
-  const height = Math.round(window.innerHeight);
   const frame = svg("svg", {
     class: "vine-frame",
     "aria-hidden": "true",
     focusable: "false",
-    viewBox: `0 0 ${width} ${height}`,
     preserveAspectRatio: "none",
   });
   container.append(frame);
-  gsap.context(() => build(frame, width, height), frame);
+
+  let context;
+  const draw = () => {
+    context?.revert();
+    frame.replaceChildren();
+    const width = Math.round(window.innerWidth);
+    const height = Math.round(window.innerHeight);
+    frame.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    const narrow = width < 900;
+    context = gsap.context(
+      () =>
+        build(
+          frame,
+          width,
+          height,
+          narrow ? { band: Math.min(32, width * 0.08), gapScale: 1.7 } : {},
+        ),
+      frame,
+    );
+  };
+
+  draw();
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(draw, 160);
+  });
 }
 
-function build(frame, width, height) {
+function build(frame, width, height, options = {}) {
   const stems = svg("g", { class: "vine-stems" });
   const leaves = svg("g", { class: "vine-leaves" });
   const flowers = svg("g", { class: "vine-flowers" });
   const dots = svg("g", { class: "vine-dots" });
   frame.append(stems, leaves, flowers, dots);
 
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduced = options.reduced ?? window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const tl = gsap.timeline({ paused: true });
-  const band = Math.min(96, Math.min(width, height) * 0.14);
+  const band = options.band ?? Math.min(96, Math.min(width, height) * 0.14);
+  const gap = options.gapScale ?? 1;
+  const salt = options.salt ?? 0;
 
-  edges(width, height).forEach((edge, edgeIndex) => {
+  (options.edges ?? edges(width, height)).forEach((edge, edgeIndex) => {
+    edgeIndex += salt;
     ROOTS.forEach((root, rootIndex) => {
       growPath(stems, tl, smoothPath(braidPoints(edge, root, edgeIndex + rootIndex)), {
         weight: root.weight,
@@ -45,7 +71,7 @@ function build(frame, width, height) {
       });
     });
 
-    positions(edge.span, 62, edgeIndex).forEach((along, index) => {
+    positions(edge.span, 62 * gap, edgeIndex).forEach((along, index) => {
       const roll = hash(edgeIndex + 3, index);
       const turn = roll > 0.5 ? 1 : -1;
       const reach = band * (0.34 + roll * 0.7);
@@ -95,7 +121,7 @@ function build(frame, width, height) {
       }
     });
 
-    positions(edge.span, 110, edgeIndex + 11).forEach((along, index) => {
+    positions(edge.span, 110 * gap, edgeIndex + 11).forEach((along, index) => {
       const roll = hash(edgeIndex + 8, index);
       const origin = at(edge, along, 4 + roll * 10);
       const angle = Math.atan2(edge.inward.y, edge.inward.x) + (roll > 0.5 ? 0.8 : -0.8);
@@ -107,7 +133,7 @@ function build(frame, width, height) {
       });
     });
 
-    positions(edge.span, 70, edgeIndex + 21).forEach((along, index) => {
+    positions(edge.span, 70 * gap, edgeIndex + 21).forEach((along, index) => {
       const roll = hash(edgeIndex + 15, index);
       const inward = band * (0.28 + roll * 0.38);
       stipple(dots, tl, at(edge, along + (roll - 0.5) * 18, inward), 6 + Math.floor(roll * 6), 7 + roll * 5, roll, reduced, 0.45 + index * 0.02);
@@ -258,6 +284,11 @@ function placeLeaf(layer, tl, opts) {
     "transform",
     `translate(${round(opts.x)} ${round(opts.y)}) rotate(${round(opts.rotation)}) scale(${round(opts.scale)})`,
   );
+  const body = group.querySelector(".leaf-shape:not(.leaf-vein)");
+  if (!opts.reduced) {
+    gsap.set(body, { fillOpacity: 0 });
+    tl.to(body, { fillOpacity: 1, duration: 0.22, ease: "none" }, opts.time + 0.06);
+  }
   group.querySelectorAll("path").forEach((shape, index) => {
     drawInk(shape, tl, opts.time + index * 0.02, 0.28, opts.reduced);
   });
@@ -327,9 +358,7 @@ function drawInk(path, tl, time, duration, reduced) {
 
 function edges(width, height) {
   return [
-    { origin: { x: 0, y: 0 }, along: { x: 1, y: 0 }, inward: { x: 0, y: 1 }, span: width },
     { origin: { x: width, y: 0 }, along: { x: 0, y: 1 }, inward: { x: -1, y: 0 }, span: height },
-    { origin: { x: width, y: height }, along: { x: -1, y: 0 }, inward: { x: 0, y: -1 }, span: width },
     { origin: { x: 0, y: height }, along: { x: 0, y: -1 }, inward: { x: 1, y: 0 }, span: height },
   ];
 }

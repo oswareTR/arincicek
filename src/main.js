@@ -1,8 +1,12 @@
 import "./style.css";
 import { mountSectionFrames } from "./frames.js";
 import { mountVineFrame } from "./vines.js";
-import { featuredPlayer, tracksMarkup } from "./tracks.js";
-import { mountWorkReveals, worksMarkup } from "./works.js";
+import { featuredPlayer, featuredTrack, tracksMarkup } from "./tracks.js";
+import { mountEnterReveals, mountWorkReveals, worksMarkup } from "./works.js";
+
+const INSTAGRAM_URL = "https://www.instagram.com/arintattoo7/";
+const YOUTUBE_URL = "https://www.youtube.com/@ArinOfficiall/videos";
+const SPOTIFY_URL = "https://open.spotify.com/artist/7L9cxWoJS4joiFLUnXMD7g";
 
 const ROUTES = {
   tattoo: {
@@ -52,12 +56,12 @@ const youtubeIcon = `
 const app = document.querySelector("#app");
 app.innerHTML = `
   <div class="nav-cluster">
-    <a class="nav-social nav-social-ig" href="https://www.instagram.com/arintattoo7/" target="_blank" rel="noreferrer" aria-label="Instagram">${instagramIcon}</a>
+    <a class="nav-social nav-social-ig" href="${INSTAGRAM_URL}" target="_blank" rel="noreferrer" aria-label="Instagram">${instagramIcon}</a>
     <nav class="navbar" aria-label="Ana menü">
       <a class="nav-link" data-route="tattoo" href="#/tattoo">${tattooIcon}<span>Tattoo</span></a>
       <a class="nav-link" data-route="muzik" href="#/muzik">${musicIcon}<span>Müzik</span></a>
     </nav>
-    <a class="nav-social nav-social-yt" href="https://www.youtube.com/@ArinOfficiall/videos" target="_blank" rel="noreferrer" aria-label="YouTube">${youtubeIcon}</a>
+    <a class="nav-social nav-social-yt" href="${YOUTUBE_URL}" target="_blank" rel="noreferrer" aria-label="YouTube">${youtubeIcon}</a>
   </div>
   <main class="page" id="page"></main>
 `;
@@ -89,11 +93,14 @@ function render() {
   document.title = `Arıncık — ${view.title}`;
   const viewMarkup = route === "tattoo" ? tattooPage() : musicPage();
   page.innerHTML = viewMarkup + siteFooter();
+  page.scrollTop = 0;
 
   page.classList.add("is-snap");
   const releaseFrames = mountSectionFrames(page);
   const releaseWorks = route === "tattoo" ? mountWorkReveals(page) : () => {};
+  const releaseEnter = mountEnterReveals(page);
   releasePage = () => {
+    releaseEnter();
     releaseWorks();
     releaseFrames();
   };
@@ -111,50 +118,46 @@ function siteFooter() {
     <footer class="site-footer">
       <div class="footer-inner">
         <div class="footer-brand">
+          <p class="footer-kicker">Nevşehir · dövme ve müzik</p>
           <p class="footer-name">Arıncık</p>
-          <p class="footer-lead">Nevşehir’de dövme ve müzik. Stüdyo notları, saatler ve yeni parçalar buraya gelecek.</p>
+          <p class="footer-lead">Nevşehir’de kişiye özel dövme ve Arin’in müziği. Randevu için Instagram’dan yazın.</p>
         </div>
-        <div class="footer-col">
-          <p class="footer-label">Stüdyo</p>
-          <p>Örnek Sokak No: 7</p>
-          <p>Nevşehir, Türkiye</p>
-          <p>Salı–Cumartesi · 12:00–20:00</p>
+        <div class="footer-panel">
+          <div class="footer-col">
+            <p class="footer-label">Stüdyo</p>
+            <p>Nevşehir, Türkiye</p>
+            <p>Salı–Cumartesi</p>
+            <p>12:00–20:00</p>
+          </div>
+          <div class="footer-col">
+            <p class="footer-label">İletişim</p>
+            <a class="footer-cta" href="${INSTAGRAM_URL}" target="_blank" rel="noreferrer">@arintattoo7</a>
+            <p>Randevu ve çalışmalar için yazın.</p>
+          </div>
+          <nav class="footer-social" aria-label="Sosyal medya">
+            <p class="footer-label">Sosyal</p>
+            <ul>
+              <li>
+                <a href="${INSTAGRAM_URL}" target="_blank" rel="noreferrer">
+                  <span class="footer-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.6"/><circle cx="17.1" cy="6.9" r="0.8" fill="currentColor" stroke="none"/></svg></span>
+                  Instagram
+                </a>
+              </li>
+              <li>
+                <a href="${SPOTIFY_URL}" target="_blank" rel="noreferrer">
+                  <span class="footer-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4"/><path d="M7.6 10.1c2.7-1.1 6.2-.9 8.7.6"/><path d="M8.1 12.9c2.1-.8 4.6-.6 6.5.5"/><path d="M8.7 15.5c1.5-.5 3.2-.4 4.6.4"/></svg></span>
+                  Spotify
+                </a>
+              </li>
+              <li>
+                <a href="${YOUTUBE_URL}" target="_blank" rel="noreferrer">
+                  <span class="footer-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="11" rx="3"/><path d="M10.6 9.8v4.4l3.8-2.2z" fill="currentColor" stroke="none"/></svg></span>
+                  YouTube
+                </a>
+              </li>
+            </ul>
+          </nav>
         </div>
-        <div class="footer-col">
-          <p class="footer-label">İletişim</p>
-          <a href="mailto:merhaba@arincicek.com">merhaba@arincicek.com</a>
-          <p>0500 000 00 00</p>
-          <p>Randevu için yazın.</p>
-        </div>
-        <nav class="footer-social" aria-label="Sosyal medya">
-          <p class="footer-label">Sosyal</p>
-          <ul>
-            <li>
-              <a href="https://www.instagram.com/arintattoo7/" target="_blank" rel="noreferrer">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.6"/><circle cx="17.1" cy="6.9" r="0.8" fill="currentColor" stroke="none"/></svg>
-                Instagram
-              </a>
-            </li>
-            <li>
-              <a href="https://open.spotify.com/artist/7L9cxWoJS4joiFLUnXMD7g" target="_blank" rel="noreferrer">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.4"/><path d="M7.6 10.1c2.7-1.1 6.2-.9 8.7.6"/><path d="M8.1 12.9c2.1-.8 4.6-.6 6.5.5"/><path d="M8.7 15.5c1.5-.5 3.2-.4 4.6.4"/></svg>
-                Spotify
-              </a>
-            </li>
-            <li>
-              <a href="https://www.youtube.com/@ArinOfficiall/videos" target="_blank" rel="noreferrer">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6.5" width="18" height="11" rx="3"/><path d="M10.6 9.8v4.4l3.8-2.2z" fill="currentColor" stroke="none"/></svg>
-                YouTube
-              </a>
-            </li>
-            <li>
-              <a href="https://soundcloud.com/" target="_blank" rel="noreferrer">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 15.2v2.2M7.2 13.2v4.2M9.9 10.4v7M12.6 12.2v5.2M15.3 8.6v8.8"/><path d="M15.3 9.2a3.2 3.2 0 0 1 3.2 3.2v1.2"/></svg>
-                SoundCloud
-              </a>
-            </li>
-          </ul>
-        </nav>
         <p class="footer-note">© 2026 Arıncık</p>
       </div>
     </footer>
@@ -168,18 +171,16 @@ function musicPage() {
         <p class="studio-kicker">YouTube · @ArinOfficiall</p>
         <h1>Müzik</h1>
         <p class="studio-lead">Sözü de müziği de Arin’in.</p>
-        <p class="studio-note">
-          Kanal 2018’de açıldı. En çok Zalım dinlendi. Yeni albümün adı Araf.
-        </p>
+        <p class="studio-note">${featuredTrack.note}</p>
         <a
           class="studio-link"
-          href="https://www.youtube.com/@ArinOfficiall/videos"
+          href="${YOUTUBE_URL}"
           target="_blank"
           rel="noreferrer"
         >
           YouTube’da dinle
         </a>
-        <p class="studio-award-title">Zalım<br>2,6 milyon<br>izlenme</p>
+        <p class="studio-award-title">${featuredTrack.title}<br>${featuredTrack.stat.join("<br>")}</p>
       </header>
       <figure class="studio-award">
         ${featuredPlayer()}
@@ -215,7 +216,7 @@ function tattooPage() {
         </p>
         <a
           class="studio-link"
-          href="https://www.instagram.com/arintattoo7/"
+          href="${INSTAGRAM_URL}"
           target="_blank"
           rel="noreferrer"
         >

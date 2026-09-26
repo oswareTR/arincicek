@@ -67,11 +67,19 @@ const TRACKS = [
     id: "zalim-akustik",
     video: "E43M-v29l_0",
     kicker: "09",
-    title: "Zalım",
+    title: "Zalım (Akustik)",
     story:
       "2020’deki Zalım, Uçhisar’da akustik olarak yeniden. Söz, düzen ve mix Arin’de. Görüntü İlker Photography.",
   },
 ];
+
+// Flagship on the music hero. Title, stat, note, and embed stay on this one record.
+export const featuredTrack = {
+  video: "PD2yznmKaq8",
+  title: "Zalım",
+  stat: ["2,6 milyon", "izlenme"],
+  note: "Kanal 2018’de açıldı. En çok Zalım dinlendi. Yeni albümün adı Araf.",
+};
 
 function player(video, title, className = "track-player") {
   return `
@@ -110,5 +118,5 @@ export function tracksMarkup() {
 }
 
 export function featuredPlayer() {
-  return player("PD2yznmKaq8", "Arin — Zalım", "studio-player");
+  return player(featuredTrack.video, `Arin — ${featuredTrack.title}`, "studio-player");
 }

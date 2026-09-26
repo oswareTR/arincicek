@@ -19,8 +19,24 @@ export function mountSectionFrames(root) {
 
   return () => {
     stops.forEach((stop) => stop());
-    ScrollTrigger.refresh();
+    ScrollTrigger.getAll().forEach((trigger) => {
+      const triggerNode = trigger.trigger;
+      if (trigger.scroller === page || (triggerNode instanceof Node && page.contains(triggerNode))) {
+        trigger.kill();
+      }
+    });
   };
+}
+
+function liveList(targets) {
+  const list = (Array.isArray(targets) ? targets : [targets]).filter((node) => node && node.nodeType === 1);
+  return list.length ? list : null;
+}
+
+function setIf(targets, vars) {
+  const list = liveList(targets);
+  if (!list) return;
+  gsap.set(list, vars);
 }
 
 function mountFrame(section, page, layout, reduced) {
@@ -49,7 +65,7 @@ function mountFrame(section, page, layout, reduced) {
     const radius = Math.min(18, width * 0.035, height * 0.035);
     line.setAttribute("d", roundedRect(1.4, 1.4, width - 2.8, height - 2.8, radius));
     const length = line.getTotalLength();
-    gsap.set(line, { strokeDasharray: length, strokeDashoffset: reduced ? 0 : length });
+    setIf(line, { strokeDasharray: length, strokeDashoffset: reduced ? 0 : length });
     lineTween?.scrollTrigger?.kill();
     lineTween?.kill();
     if (reduced) return true;
@@ -78,12 +94,13 @@ function mountFrame(section, page, layout, reduced) {
     const ready = grown || reduced;
     placed.forEach((node) => {
       node.vines.forEach((vine) => {
-        gsap.set(vine.path, {
+        if (!vine.path) return;
+        setIf(vine.path, {
           strokeDasharray: vine.length,
           strokeDashoffset: ready ? 0 : vine.length,
         });
       });
-      gsap.set([...node.leaves, ...node.blooms], { opacity: ready ? 1 : 0 });
+      setIf([...node.leaves, ...node.blooms], { opacity: ready ? 1 : 0 });
     });
     if (ready) return;
 
@@ -95,6 +112,7 @@ function mountFrame(section, page, layout, reduced) {
       placed.forEach((node, stemIndex) => {
         const at = stemIndex * 0.16;
         node.vines.forEach((vine) => {
+          if (!vine.path) return;
           stemTween.fromTo(
             vine.path,
             { strokeDashoffset: vine.length },
@@ -102,8 +120,8 @@ function mountFrame(section, page, layout, reduced) {
             at,
           );
         });
-        const marks = [...node.leaves, ...node.blooms];
-        if (!marks.length) return;
+        const marks = liveList([...node.leaves, ...node.blooms]);
+        if (!marks) return;
         stemTween.fromTo(marks, { opacity: 0 }, { opacity: 1, duration: 1.8, ease: "power2.out" }, at + 5.8);
       });
     };

@@ -8,7 +8,7 @@ import thrillTrace from "./traces/thrill.svg?raw";
 const WORKS = [
   {
     id: "butterfly",
-    src: "tattoos/tatoo_4.jpg",
+    src: "tattoos/tattoo_4.jpg",
     width: 1343,
     height: 1735,
     alt: "Kelebek kanatlarında bir yüz dövmesi",
@@ -44,7 +44,7 @@ const WORKS = [
   },
   {
     id: "hand",
-    src: "tattoos/tatoo_5.jpg",
+    src: "tattoos/tattoo_5.jpg",
     width: 1440,
     height: 1440,
     alt: "El üzerinde kanatlı figür dövmesi",
@@ -119,7 +119,8 @@ export function mountWorkReveals(root) {
         if (!section || section.dataset.played) return;
         section.dataset.played = "true";
         io.unobserve(entry.target);
-        tweens.push(play(section));
+        const tween = play(section);
+        if (tween) tweens.push(tween);
       });
     },
     { root: page, threshold: 0.45 },
@@ -135,11 +136,16 @@ export function mountWorkReveals(root) {
 
 function prepare(section, reduced) {
   const photo = section.querySelector(".work-photo");
+  const trace = section.querySelector(".work-trace");
   const paths = [...section.querySelectorAll(".work-trace path")];
+  if (!photo || !trace) {
+    section.classList.add("is-static");
+    return;
+  }
   if (reduced) {
     section.classList.add("is-static");
     gsap.set(photo, { opacity: 1 });
-    gsap.set(section.querySelector(".work-trace"), { opacity: 0 });
+    gsap.set(trace, { opacity: 0 });
     return;
   }
   gsap.set(photo, { opacity: 0 });
@@ -153,6 +159,7 @@ function prepare(section, reduced) {
 function play(section) {
   const photo = section.querySelector(".work-photo");
   const trace = section.querySelector(".work-trace");
+  if (!photo || !trace || !section.isConnected) return null;
   const paths = [...section.querySelectorAll(".work-trace path")].filter((path) => path.getTotalLength());
   const draw = 3.6;
   const timeline = gsap.timeline();
@@ -169,4 +176,53 @@ function play(section) {
   timeline.to(photo, { opacity: 1, duration: draw * 0.8, ease: "power2.out" }, draw * 0.35);
   timeline.to(trace, { opacity: 0, duration: 0.9, ease: "power2.out" }, draw);
   return timeline;
+}
+
+const ENTER_SELECTOR = ".studio-copy, .studio-award, .work-kicker, .work-copy h2, .work-story, .studio-works-title, .booking, .footer-inner";
+
+export function mountEnterReveals(root) {
+  const page = root.id === "page" ? root : document.querySelector("#page");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const nodes = [...root.querySelectorAll(ENTER_SELECTOR)].filter((node) => node.isConnected);
+  if (reduced || !nodes.length) return () => {};
+
+  const groups = new Map();
+  nodes.forEach((node) => {
+    const section = node.closest(".studio, .work-section, .booking, .site-footer");
+    if (!section) return;
+    if (!groups.has(section)) groups.set(section, []);
+    groups.get(section).push(node);
+  });
+  if (!groups.size) return () => {};
+
+  gsap.set(nodes, { autoAlpha: 0, y: 12 });
+  const tweens = [];
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const group = groups.get(entry.target)?.filter((node) => node.isConnected);
+        io.unobserve(entry.target);
+        if (!group?.length) return;
+        tweens.push(
+          gsap.to(group, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.72,
+            stagger: 0.05,
+            ease: "power2.out",
+            clearProps: "transform",
+          }),
+        );
+      });
+    },
+    { root: page, threshold: 0.16 },
+  );
+
+  groups.forEach((_nodes, section) => io.observe(section));
+
+  return () => {
+    io.disconnect();
+    tweens.forEach((tween) => tween.kill());
+  };
 }

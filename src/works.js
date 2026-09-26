@@ -103,7 +103,7 @@ export function worksMarkup(base) {
 }
 
 export function mountWorkReveals(root) {
-  const page = document.querySelector("#page");
+  const page = root.classList.contains("page") ? root : root.closest(".page");
   const sections = [...root.querySelectorAll(".work-section")];
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const tweens = [];
@@ -181,7 +181,7 @@ function play(section) {
 const ENTER_SELECTOR = ".studio-copy, .studio-award, .work-kicker, .work-copy h2, .work-story, .studio-works-title, .booking, .footer-inner";
 
 export function mountEnterReveals(root) {
-  const page = root.id === "page" ? root : document.querySelector("#page");
+  const page = root.classList.contains("page") ? root : root.closest(".page");
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const nodes = [...root.querySelectorAll(ENTER_SELECTOR)].filter((node) => node.isConnected);
   if (reduced || !nodes.length) return () => {};

@@ -154,14 +154,19 @@ body {
 }
 
 .page {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 1;
-  height: 100%;
   overflow-x: clip;
   overflow-y: auto;
   padding: 7rem 10vw 12vw;
   overscroll-behavior: contain;
   scrollbar-width: none;
+}
+
+.page:not(.is-active) {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .page::-webkit-scrollbar {

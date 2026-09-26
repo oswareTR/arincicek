@@ -10,6 +10,15 @@ const ROOTS = [
   { weight: "mid", base: 7, amp: 7, phase: 3.2 },
 ];
 
+let quietUntil = 0;
+let resizeTimer = 0;
+
+export function holdVineFrame() {
+  // Route changes can emit a resize. Drop that burst; a later real resize still redraws.
+  quietUntil = performance.now() + 500;
+  window.clearTimeout(resizeTimer);
+}
+
 export function mountVineFrame(container) {
   const frame = svg("svg", {
     class: "vine-frame",
@@ -20,11 +29,16 @@ export function mountVineFrame(container) {
   container.append(frame);
 
   let context;
+  let drawnWidth = -1;
+  let drawnHeight = -1;
   const draw = () => {
-    context?.revert();
-    frame.replaceChildren();
     const width = Math.round(window.innerWidth);
     const height = Math.round(window.innerHeight);
+    if (width === drawnWidth && height === drawnHeight) return;
+    drawnWidth = width;
+    drawnHeight = height;
+    context?.revert();
+    frame.replaceChildren();
     frame.setAttribute("viewBox", `0 0 ${width} ${height}`);
     const narrow = width < 900;
     context = gsap.context(
@@ -40,10 +54,13 @@ export function mountVineFrame(container) {
   };
 
   draw();
-  let resizeTimer;
   window.addEventListener("resize", () => {
     window.clearTimeout(resizeTimer);
-    resizeTimer = window.setTimeout(draw, 160);
+    if (performance.now() < quietUntil) return;
+    resizeTimer = window.setTimeout(() => {
+      if (performance.now() < quietUntil) return;
+      draw();
+    }, 160);
   });
 }
 

@@ -1,6 +1,6 @@
 import "./style.css";
 import { mountSectionFrames } from "./frames.js";
-import { mountVineFrame } from "./vines.js";
+import { holdVineFrame, mountVineFrame } from "./vines.js";
 import { featuredPlayer, featuredTrack, tracksMarkup } from "./tracks.js";
 import { mountEnterReveals, mountWorkReveals, worksMarkup } from "./works.js";
 
@@ -63,16 +63,30 @@ app.innerHTML = `
     </nav>
     <a class="nav-social nav-social-yt" href="${YOUTUBE_URL}" target="_blank" rel="noreferrer" aria-label="YouTube">${youtubeIcon}</a>
   </div>
-  <main class="page" id="page"></main>
+  <main class="page is-snap" id="page-tattoo" data-route-panel="tattoo"></main>
+  <main class="page is-snap" id="page-muzik" data-route-panel="muzik"></main>
 `;
 
 mountVineFrame(app);
 
 const navCluster = document.querySelector(".nav-cluster");
-const page = document.querySelector("#page");
+const panels = {
+  tattoo: document.querySelector("#page-tattoo"),
+  muzik: document.querySelector("#page-muzik"),
+};
 const links = [...document.querySelectorAll(".nav-link")];
-let releasePage = () => {};
 app.append(navCluster);
+
+// Both routes stay in the shell so ivy is measured and drawn once.
+panels.tattoo.innerHTML = tattooPage() + siteFooter();
+panels.muzik.innerHTML = musicPage() + siteFooter();
+mountSectionFrames(panels.tattoo);
+mountWorkReveals(panels.tattoo);
+mountEnterReveals(panels.tattoo);
+mountSectionFrames(panels.muzik);
+mountEnterReveals(panels.muzik);
+
+let shownRoute = "";
 
 function currentRoute() {
   const slug = location.hash.replace(/^#\/?/, "");
@@ -87,23 +101,21 @@ function render() {
     history.replaceState(null, "", "#/tattoo");
   }
 
-  releasePage();
-  releasePage = () => {};
-
+  if (shownRoute && shownRoute !== route) holdVineFrame();
+  shownRoute = route;
   document.title = `Arıncık — ${view.title}`;
-  const viewMarkup = route === "tattoo" ? tattooPage() : musicPage();
-  page.innerHTML = viewMarkup + siteFooter();
-  page.scrollTop = 0;
 
-  page.classList.add("is-snap");
-  const releaseFrames = mountSectionFrames(page);
-  const releaseWorks = route === "tattoo" ? mountWorkReveals(page) : () => {};
-  const releaseEnter = mountEnterReveals(page);
-  releasePage = () => {
-    releaseEnter();
-    releaseWorks();
-    releaseFrames();
-  };
+  for (const [name, panel] of Object.entries(panels)) {
+    const active = name === route;
+    panel.classList.toggle("is-active", active);
+    panel.toggleAttribute("inert", !active);
+    if (active) {
+      panel.removeAttribute("aria-hidden");
+      panel.scrollTop = 0;
+    } else {
+      panel.setAttribute("aria-hidden", "true");
+    }
+  }
 
   links.forEach((link) => {
     const active = link.dataset.route === route;

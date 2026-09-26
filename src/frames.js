@@ -11,7 +11,8 @@ const symbols = new Map();
 
 export function mountSectionFrames(root) {
   ensureSymbols();
-  const page = root.id === "page" ? root : document.querySelector("#page");
+  const page = root.classList.contains("page") ? root : root.closest(".page");
+  if (!page) return () => {};
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const stops = [...root.querySelectorAll(SECTIONS)].map((section, index) =>
     mountFrame(section, page, layouts[index % layouts.length], reduced),
@@ -55,6 +56,7 @@ function mountFrame(section, page, layout, reduced) {
   let stemTrigger;
   let grown = false;
   let builtMode = "";
+  let drawnBox = "";
   let raf = 0;
 
   const drawLine = () => {
@@ -137,8 +139,14 @@ function mountFrame(section, page, layout, reduced) {
   };
 
   const update = () => {
+    const width = frame.clientWidth;
+    const height = frame.clientHeight;
+    if (width < 8 || height < 8) return;
+    const box = `${Math.round(width)}x${Math.round(height)}`;
+    const mode = width < 700 ? "mobile" : "desktop";
+    if (box === drawnBox && builtMode === mode) return;
     if (!drawLine()) return;
-    const mode = frame.clientWidth < 700 ? "mobile" : "desktop";
+    drawnBox = box;
     if (builtMode === mode) return;
     if (stemTween?.isActive()) grown = false;
     stemTween?.kill();

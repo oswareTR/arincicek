@@ -97,7 +97,6 @@ function showTile(index) {
   lightboxImg.src = source.currentSrc || source.src
   lightboxImg.alt = tile.dataset.alt || ''
   lightboxCaption.textContent = tile.dataset.caption || ''
-  document.documentElement.classList.add('is-lightbox')
   dialog.showModal()
 }
 
@@ -116,7 +115,6 @@ dialog.querySelector('[data-prev]').addEventListener('click', () => showTile(til
 dialog.querySelector('[data-next]').addEventListener('click', () => showTile(tileIndex + 1))
 
 dialog.addEventListener('close', () => {
-  document.documentElement.classList.remove('is-lightbox')
   lightboxImg.removeAttribute('src')
   lastTrigger?.focus()
 })

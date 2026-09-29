@@ -72,7 +72,7 @@ html[data-route="muzik"] body {
 }
 
 html[data-route="muzik"] #book-dock,
-html.is-lightbox #book-dock {
+html:has(dialog[open]) #book-dock {
   display: none;
 }
 

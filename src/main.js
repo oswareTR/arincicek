@@ -5,14 +5,14 @@ const TATTOO_HASHES = new Set(['', 'tattoo', 'galeri', 'surec', 'randevu'])
 
 const SEO = {
   tattoo: {
-    title: 'Arin Premium Tattoo Studyosu — Nevşehir dövme',
+    title: 'Arin Dövme Stüdyosu — Nevşehir',
     description:
-      'Nevşehir’de kişiye özel dövme. Randevu Instagram’dan, @arintattoo7. Stüdyo Salı–Cumartesi 12:00–20:00.',
+      'Nevşehir’de kişiye özel dövme. Randevu DM ile, @arintattoo7. Stüdyo Salı–Cumartesi 12:00–20:00.',
   },
   muzik: {
     title: 'Arin — Zalım ve diğer parçalar',
     description:
-      'Arin’in müziği. Zalım 2,6 milyon izlenme. YouTube kanalı @ArinOfficiall ve Spotify’da Arin.',
+      'Arin’in müziği. Zalım 2,6 milyon izlenme. Kanal @ArinOfficiall, Spotify’da da Arin.',
   },
 }
 
@@ -57,7 +57,7 @@ function applyRoute(next, { scroll = false } = {}) {
   setMeta('theme-color', next === 'muzik' ? '#f3eadf' : '#141210')
 
   if (changed && announcer) {
-    announcer.textContent = next === 'muzik' ? 'Müzik sayfası' : 'Tattoo sayfası'
+    announcer.textContent = next === 'muzik' ? 'Müzik sayfası' : 'Dövme sayfası'
   }
 
   if (changed && scroll) {

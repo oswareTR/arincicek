@@ -71,7 +71,8 @@ html[data-route="muzik"] body {
   color: var(--color-ink);
 }
 
-html[data-route="muzik"] #book-dock {
+html[data-route="muzik"] #book-dock,
+html.is-lightbox #book-dock {
   display: none;
 }
 

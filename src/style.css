@@ -1,1 +1,205 @@
 @import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", serif;
+  --font-sans: "Sora", "Segoe UI", sans-serif;
+  --color-ink: #141210;
+  --color-ink-2: #221e1a;
+  --color-stone: #f3eadf;
+  --color-stone-2: #e7dccb;
+  --color-clay: #9c4a32;
+  --color-clay-2: #b35a3e;
+  --color-mist: #d4cbbf;
+  --color-olive: #c5cbb0;
+  --color-olive-ink: #3d4634;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+    background: var(--color-ink);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--color-ink);
+    color: var(--color-stone);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: #9c4a32;
+    color: #f3eadf;
+  }
+
+  :focus-visible {
+    outline: 2px solid #e2b499;
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+html[data-route="tattoo"] [data-page="muzik"],
+html[data-route="muzik"] [data-page="tattoo"] {
+  display: none;
+}
+
+html[data-route="muzik"] {
+  color-scheme: light;
+  background: var(--color-stone);
+}
+
+html[data-route="muzik"] body {
+  background: var(--color-stone);
+  color: var(--color-ink);
+}
+
+html[data-route="muzik"] #book-dock,
+html:has(dialog[open]) #book-dock {
+  display: none;
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  z-index: 70;
+  transform: translateY(-160%);
+  background: var(--color-stone);
+  color: var(--color-ink);
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+}
+
+.skip:focus {
+  transform: none;
+}
+
+.nav-link[aria-current="page"] {
+  background: var(--color-stone);
+  color: var(--color-ink);
+}
+
+.gallery-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #1c1916;
+  color: var(--color-stone);
+  text-align: left;
+  cursor: zoom-in;
+  border: 0;
+  padding: 0;
+}
+
+.tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tile img {
+    transition: transform 700ms ease;
+  }
+
+  .tile:hover img,
+  .tile:focus-visible img {
+    transform: scale(1.045);
+  }
+}
+
+.tile-shade {
+  pointer-events: none;
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 2.75rem 1rem 0.9rem;
+  background: linear-gradient(to top, rgba(20, 18, 16, 0.88), rgba(20, 18, 16, 0));
+}
+
+@media (min-width: 640px) {
+  .gallery-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tile {
+    aspect-ratio: 1;
+  }
+
+  .tile-tall {
+    grid-column: span 2;
+    aspect-ratio: 4 / 5;
+  }
+}
+
+@media (min-width: 960px) {
+  .gallery-grid {
+    grid-template-columns: 1.15fr 1fr 1fr;
+    grid-template-rows: minmax(250px, 30vh) minmax(250px, 30vh);
+  }
+
+  .tile,
+  .tile-tall {
+    aspect-ratio: auto;
+    height: 100%;
+    grid-column: auto;
+  }
+
+  .tile-tall {
+    grid-row: span 2;
+  }
+}
+
+#lightbox {
+  width: min(1040px, calc(100vw - 1.5rem));
+  max-height: calc(100dvh - 1.5rem);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-stone);
+  overflow: visible;
+}
+
+#lightbox::backdrop {
+  background: rgba(10, 8, 7, 0.9);
+}
+
+#lightbox img {
+  display: block;
+  width: 100%;
+  max-height: min(78dvh, 860px);
+  object-fit: contain;
+  background: #0c0b0a;
+}
+
+.track-slot:not([hidden]) {
+  display: block;
+}

@@ -36,8 +36,8 @@ function routeFromLocation() {
   return document.documentElement.dataset.route === 'muzik' ? 'muzik' : 'tattoo'
 }
 
-function setMeta(name, content) {
-  const node = document.head.querySelector(`meta[name="${name}"]`)
+function setMeta(attr, key, content) {
+  const node = document.head.querySelector(`meta[${attr}="${key}"]`)
   if (node) node.setAttribute('content', content)
 }
 
@@ -53,8 +53,12 @@ function applyRoute(next, { scroll = false } = {}) {
 
   const seo = SEO[next]
   document.title = seo.title
-  setMeta('description', seo.description)
-  setMeta('theme-color', next === 'muzik' ? '#f3eadf' : '#141210')
+  setMeta('name', 'description', seo.description)
+  setMeta('name', 'theme-color', next === 'muzik' ? '#f3eadf' : '#141210')
+  setMeta('property', 'og:title', seo.title)
+  setMeta('property', 'og:description', seo.description)
+  setMeta('name', 'twitter:title', seo.title)
+  setMeta('name', 'twitter:description', seo.description)
 
   if (changed && announcer) {
     announcer.textContent = next === 'muzik' ? 'Müzik sayfası' : 'Dövme sayfası'

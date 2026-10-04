@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 
-// Local preview stays at /. GitHub project Pages serves the repo from /arincicek/.
+// arincicek.info is a custom domain, so Pages serves this site from /, not /arincicek/.
 export default defineConfig({
   plugins: [tailwindcss()],
-  base: process.env.GITHUB_ACTIONS ? '/arincicek/' : '/',
+  base: '/',
 })
